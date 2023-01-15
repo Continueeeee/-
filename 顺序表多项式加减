@@ -1,0 +1,149 @@
+/*多项式的顺序结构存储类型定义    Created by  Rui in 2023/1/12 */
+/*  	输入示例：
+3
+2 3
+3 4
+5 7
+5
+2 1
+3 3
+-3 4
+4 6
+5 7
+（说明：第一个数据3表示该第一个一元多项式的项数为3，后面的2  3 表示第一项的系数为2 指数为3；按指数递增的次序输入）
+	输出示例：
+一元多项式1： 2x(3)+3x(4)+5x(7)
+一元多项式2： 2x(1)+3x(3)-3x(4)+4x(6)+5x(7)
+加的结果：2x(1)+5x(3) +4x(6)+10x(7)
+*/
+
+#include<iostream>
+#define  MAXSIZE 100   /*定义多项式的最大长度*/
+
+/*定义存储多项式的结构体*/
+typedef struct
+{
+    float p;            //存储指数
+    int  e;             //存储系数
+}Polynomial;
+/*定义顺序表储存多项式*/
+typedef struct
+{
+    Polynomial  elem[MAXSIZE];          //数组存储多项式
+    int length;                 //当前项的个数
+}SqList_Polynomial;
+
+/*多项式加减函数原型*/
+void PolyCalculate(SqList_Polynomial  SqList_Poly1,SqList_Polynomial  SqList_Poly2 ,SqList_Polynomial  &q1);
+
+/*测试能否完成多项式的相加*/
+  int main (void){
+    //声明多项式
+    SqList_Polynomial s1;
+    SqList_Polynomial s2;
+    SqList_Polynomial s3;
+    using  namespace std;
+    /*赋值多项式1*/
+    cin>>s1.length;
+    for (int i = 0; i < s1.length; i++)
+    {
+       cin>>s1.elem[i].e;
+       cin>>s1.elem[i].p;
+    }
+    /*赋值多项式2*/
+        cin>>s2.length;
+      for (int  j = 0; j < s2.length; j++)
+      {
+          cin>>s2.elem[j].e;
+          cin>>s2.elem[j].p;
+      }
+    /*打印多项式1*/
+    for (int i = 0; i < s1.length ; i++)
+    {
+        cout<<s1.elem[i].e<<"X("<<s1.elem[i].p<<")";
+    }
+    /*打印多项式2*/
+      for (int  i = 0; i < s2.length; i++)
+     {
+      cout<<s2.elem[i].e<<"X("<<s2.elem[i].p<<")";
+    }
+
+     PolyCalculate(s1,s2,s3);   //函数调用
+
+     /*输出结果*/
+     printf("\n加的结果为：");
+     for (int i = 0; i < s3.length; i++)
+     {
+        cout<<s3.elem[i].e<<"X("<<s3.elem[i].p<<")";
+
+     }
+    cout<<"测试成功";
+
+     return 0;
+
+}
+void PolyCalculate(SqList_Polynomial  SqList_Poly1,SqList_Polynomial  SqList_Poly2,SqList_Polynomial  &q1)
+{
+    q1.length=0;        //初始化length的值
+    int count1=0;   //定义此时多项式比较大小的位置
+    int count2=0;
+    /*遍历比较大小*/
+    do {
+            /*情况1 ：
+             *
+             * 多项式1的指数较小；将多项式1的值赋值给多项式3
+             * */
+        if(SqList_Poly2.elem[count2].p>SqList_Poly1.elem[count1].p){
+            q1.elem[q1.length].p=SqList_Poly1.elem[count1].p;           //多项式1的指数赋值给多项式3
+            q1.elem[q1.length].e=SqList_Poly1.elem[count1].e;           //多项式1的系数赋值给多项式3
+            count1++;                                                    //count1 自增
+            q1.length++;                                                   //q1的位置自增
+        }
+            /*情况2 ：
+                *
+                * 多项式2的指数较小；将多项式2的值赋值给多项式3
+                * */
+        else if (SqList_Poly2.elem[count2].p<SqList_Poly1.elem[count1].p){
+
+            q1.elem[q1.length].p=SqList_Poly2.elem[count2].p;    //多项式2的指数赋值给多项式3
+            q1.elem[q1.length].e=SqList_Poly2.elem[count2].e;    //多项式2的系数赋值给多项式3
+            count2++;                                              //count2 自增
+            q1.length++;                                            //q1的位置自增
+        }
+        /*情况3 ：
+             *
+             * 多项式指数相等；
+             * */
+        else {
+            /*指数相等，系数相加等于零*/
+            if((SqList_Poly1.elem[count1].e+SqList_Poly2.elem[count2].e)==0){
+                count1++;
+                count2++;
+            }
+            /*指数相等，系数相加不为零*/
+            else{
+                q1.elem[q1.length].e=(SqList_Poly1.elem[count1].e+SqList_Poly2.elem[count2].e);
+                q1.elem[q1.length].p=SqList_Poly1.elem[count1].p;
+                q1.length++;
+                count1++;
+                count2++;
+            }
+        }
+    }while (count1<SqList_Poly1.length&&count2<SqList_Poly2.length);
+
+        /*循环结束进行判断
+         * 如果有一个多项式完成遍历时，将另一个多项式剩余项依次赋值给q1
+         * */
+        if(count1<SqList_Poly1.length){
+            for( ;count1<SqList_Poly1.length;count1++,  q1.length++){
+                    q1.elem[q1.length].e=SqList_Poly1.elem[count1].e;
+                    q1.elem[q1.length].p=SqList_Poly1.elem[count1].p;
+            }
+        }
+        if(count2<SqList_Poly2.length){
+        for( ;count2<SqList_Poly2.length;count2++,  q1.length++){
+            q1.elem[q1.length].e=SqList_Poly2.elem[count2].e;
+            q1.elem[q1.length].p=SqList_Poly2.elem[count2].p;
+        }
+    }
+}
